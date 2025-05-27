@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Self-Awareness Quiz - Empathic Minds</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #b8e6e6 0%, #7dd3d3 50%, #4fb3b3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(79, 179, 179, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4fb3b3 0%, #7dd3d3 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #4fb3b3;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .question-container {
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .question {
+            font-size: 1.3rem;
+            color: #2c5f5f;
+            margin-bottom: 25px;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .scenario {
+            background: linear-gradient(135deg, #f0fafa 0%, #e8f6f6 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #4fb3b3;
+            font-style: italic;
+            color: #2c5f5f;
+        }
+
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .answer {
+            background: #f8fdfd;
+            border: 2px solid #b8e6e6;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .answer:hover {
+            border-color: #7dd3d3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 179, 179, 0.2);
+        }
+
+        .answer.selected {
+            border-color: #4fb3b3;
+            background: linear-gradient(135deg, #e8f6f6 0%, #d4f0f0 100%);
+        }
+
+        .answer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(125, 211, 211, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .answer:hover::before {
+            left: 100%;
+        }
+
+        .progress {
+            background: #e8f6f6;
+            height: 8px;
+            border-radius: 4px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #4fb3b3, #7dd3d3);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4fb3b3 0%, #7dd3d3 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(79, 179, 179, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(79, 179, 179, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4fb3b3 0%, #7dd3d3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 30px auto;
+            box-shadow: 0 15px 30px rgba(79, 179, 179, 0.3);
+        }
+
+        .score-text {
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .result-title {
+            font-size: 2rem;
+            color: #2c5f5f;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .result-description {
+            font-size: 1.1rem;
+            color: #2c5f5f;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-section {
+            background: linear-gradient(135deg, #f0fafa 0%, #e8f6f6 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 2px solid #b8e6e6;
+        }
+
+        .contact-title {
+            color: #2c5f5f;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .contact-text {
+            color: #2c5f5f;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .email-link {
+            color: #4fb3b3;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 2px solid #4fb3b3;
+            padding: 12px 24px;
+            border-radius: 25px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .email-link:hover {
+            background: #4fb3b3;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(79, 179, 179, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header p {
+                font-size: 1rem;
+            }
+            
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .logo {
+                position: static;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">Empathic Minds</div>
+            <h1>Coach Self-Awareness Quiz</h1>
+            <p>Discover how well you understand your emotions and their impact on your athletes</p>
+        </div>
+
+        <div class="content">
+            <div id="quiz-section">
+                <div class="question-container active" data-question="1">
+                    <div class="question">1. During a crucial match, your team is losing and you notice your frustration building. What's your typical response?</div>
+                    <div class="scenario">Your team is down by two goals with 20 minutes left. You can feel your heart racing and tension in your shoulders. The players look deflated.</div>
+                    <div class="answers">
+                        <div class="answer" data-value="5">I take a deep breath, recognize my frustration, and focus on giving constructive tactical guidance to help the team refocus</div>
+                        <div class="answer" data-value="4">I notice my frustration but sometimes struggle to keep it from showing in my voice when giving instructions</div>
+                        <div class="answer" data-value="3">I feel the frustration but try to push through it, though I'm not always sure how it affects my communication</div>
+                        <div class="answer" data-value="2">I get caught up in the moment and my frustration often comes through in my body language and tone</div>
+                        <div class="answer" data-value="1">I react immediately to my frustration, often raising my voice or showing visible disappointment</div>
+                    </div>
+                </div>
+
+                <div class="question-container" data-question="2">
+                    <div class="question">2. After a player makes a costly mistake, you feel disappointed. How do you differentiate between your emotions and theirs?</div>
+                    <div class="scenario">Your star player misses a penalty that could have tied the game. You see their devastation, and you feel your own disappointment rising.</div>
+                    <div class="answers">
+                        <div class="answer" data-value="5">I clearly recognize my disappointment as separate from theirs and focus on supporting them through their emotions</div>
+                        <div class="answer" data-value="4">I usually can tell the difference, though sometimes my disappointment influences how I respond to them</div>
+                        <div class="answer" data-value="3">I'm aware there might be different emotions at play but don't always sort them out in the moment</div>
+                        <div class="answer" data-value="2">I often feel like their disappointment intensifies mine, making it hard to separate what I'm feeling</div>
+                        <div class="answer" data-value="1">I react to the situation as one emotional experience without distinguishing between our different feelings</div>
+                    </div>
+                </div>
+
+                <div class="question-container" data-question="3">
+                    <div class="question">3. When you're having a bad day personally, how aware are you of its impact on your coaching?</div>
+                    <div class="scenario">You've had a difficult morning - family stress, traffic, and you're running late to practice. The team is waiting for your usual energy and guidance.</div>
+                    <div class="answers">
+                        <div class="answer" data-value="5">I'm very aware of my personal state and consciously adjust my approach to ensure it doesn't negatively affect the team</div>
+                        <div class="answer" data-value="4">I usually notice when I'm off and try to compensate, though it sometimes still shows through</div>
+                        <div class="answer" data-value="3">I'm somewhat aware but don't always know how to prevent it from affecting my coaching</div>
+                        <div class="answer" data-value="2">I often realize afterward that my mood affected the training session or team atmosphere</div>
+                        <div class="answer" data-value="1">I rarely consider how my personal emotions might be impacting the team</div>
+                    </div>
+                </div>
+
+                <div class="question-container" data-question="4">
+                    <div class="question">4. How do you recognize when your communication style is affecting an athlete's confidence?</div>
+                    <div class="scenario">You've been giving frequent corrections to a player who's struggling with technique. You notice they seem more hesitant and less willing to take risks during drills.</div>
+                    <div class="answers">
+                        <div class="answer" data-value="5">I actively monitor how my words and tone are received and adjust immediately when I see signs of diminished confidence</div>
+                        <div class="answer" data-value="4">I usually pick up on these cues and try to balance criticism with encouragement</div>
+                        <div class="answer" data-value="3">I sometimes notice these signs but am not always sure how to adjust my approach effectively</div>
+                        <div class="answer" data-value="2">I occasionally realize my communication may have been too harsh, usually after the fact</div>
+                        <div class="answer" data-value="1">I focus mainly on getting my point across and don't often consider the impact on their confidence</div>
+                    </div>
+                </div>
+
+                <div class="question-container" data-question="5">
+                    <div class="question">5. When you feel anxiety or pressure before a big game, how do you manage it to avoid transferring it to your athletes?</div>
+                    <div class="scenario">It's the championship game. You feel the weight of expectations from parents, the school, and the players themselves. Your pre-game nerves are building.</div>
+                    <div class="answers">
+                        <div class="answer" data-value="5">I have clear strategies to manage my anxiety and consciously project calm confidence to help my athletes feel secure</div>
+                        <div class="answer" data-value="4">I work on managing my nerves and usually succeed in staying calm around the team</div>
+                        <div class="answer" data-value="3">I try to hide my anxiety but I'm not always successful, and I worry it might affect the team</div>
+                        <div class="answer" data-value="2">My pre-game nerves often show through my behavior, and I think the team sometimes picks up on it</div>
+                        <div class="answer" data-value="1">I feel the pressure intensely and don't really consider how my anxiety might be affecting the athletes</div>
+                    </div>
+                </div>
+
+                <div class="progress">
+                    <div class="progress-bar" id="progress-bar"></div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn" id="prev-btn" disabled>Previous</button>
+                    <button class="btn" id="next-btn" disabled>Next</button>
+                </div>
+            </div>
+
+            <div class="results" id="results-section">
+                <div class="score-circle">
+                    <div class="score-text" id="score-display">0%</div>
+                </div>
+                <div class="result-title" id="result-title"></div>
+                <div class="result-description" id="result-description"></div>
+                
+                <div class="contact-section">
+                    <div class="contact-title">Ready to Enhance Your Coaching?</div>
+                    <div class="contact-text">
+                        Develop deeper self-awareness and learn to manage your emotions for better athlete relationships and performance outcomes. Psychologist, Dr Peter Sear works one-to-one with coaches.
+                    </div>
+                    <a href="mailto:peter@empathicminds.org" class="email-link">Contact Dr Peter Sear</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let answers = {};
+        const totalQuestions = 5;
+
+        function selectAnswer(element, value) {
+            // Remove selection from all answers in current question
+            const currentContainer = document.querySelector(`[data-question="${currentQuestion}"]`);
+            const allAnswers = currentContainer.querySelectorAll('.answer');
+            allAnswers.forEach(answer => answer.classList.remove('selected'));
+            
+            // Select current answer
+            element.classList.add('selected');
+            answers[currentQuestion] = value;
+            
+            // Enable next button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+            
+            updateProgress();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                // Hide current question
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+                
+                currentQuestion++;
+                
+                // Show next question
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
+                
+                // Update navigation buttons
+                document.getElementById('prev-btn').disabled = false;
+                document.getElementById('next-btn').disabled = !answers[currentQuestion];
+                
+                if (currentQuestion === totalQuestions) {
+                    document.getElementById('next-btn').textContent = 'See Results';
+                    document.getElementById('next-btn').onclick = showResults;
+                }
+                
+                updateProgress();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                // Hide current question
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+                
+                currentQuestion--;
+                
+                // Show previous question
+                document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
+                
+                // Update navigation buttons
+                document.getElementById('prev-btn').disabled = currentQuestion === 1;
+                document.getElementById('next-btn').disabled = false;
+                document.getElementById('next-btn').textContent = 'Next';
+                document.getElementById('next-btn').onclick = nextQuestion;
+                
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion - 1) / totalQuestions) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+        }
+
+        function showResults() {
+            const totalScore = Object.values(answers).reduce((sum, score) => sum + score, 0);
+            const percentage = Math.round((totalScore / 25) * 100);
+            
+            document.getElementById('quiz-section').style.display = 'none';
+            document.getElementById('results-section').style.display = 'block';
+            
+            // Animate score
+            animateScore(percentage);
+            
+            // Set result title and description
+            let title, description;
+            
+            if (percentage >= 80) {
+                title = "Self-Aware Coach Leader";
+                description = "Excellent! You demonstrate strong emotional self-awareness and understand how your emotions impact your athletes. You're skilled at managing your reactions and creating a positive environment that supports athlete confidence and performance. Continue refining these skills to become an even more impactful coach.";
+            } else if (percentage >= 60) {
+                title = "Developing Self-Awareness";
+                description = "Good foundation! You show awareness of your emotions and their potential impact, though there's room to develop more consistent strategies for managing them. With focused attention on emotional regulation and communication awareness, you can significantly enhance your coaching effectiveness and athlete relationships.";
+            } else {
+                title = "Growth Opportunity";
+                description = "This is a valuable starting point for development. Building greater self-awareness of your emotions and their impact on athletes will transform your coaching effectiveness. Learning to recognize and manage your emotional responses will help create a more supportive environment for athlete growth and confidence.";
+            }
+            
+            document.getElementById('result-title').textContent = title;
+            document.getElementById('result-description').textContent = description;
+        }
+
+        function animateScore(targetScore) {
+            const scoreElement = document.getElementById('score-display');
+            let currentScore = 0;
+            const interval = setInterval(() => {
+                currentScore += 2;
+                scoreElement.textContent = currentScore + '%';
+                if (currentScore >= targetScore) {
+                    scoreElement.textContent = targetScore + '%';
+                    clearInterval(interval);
+                }
+            }, 50);
+        }
+
+        // Add click handlers to answers
+        document.addEventListener('DOMContentLoaded', function() {
+            const answerElements = document.querySelectorAll('.answer');
+            answerElements.forEach(answer => {
+                answer.addEventListener('click', function() {
+                    selectAnswer(this, parseInt(this.dataset.value));
+                });
+            });
+            
+            // Add click handlers to navigation buttons
+            document.getElementById('next-btn').addEventListener('click', nextQuestion);
+            document.getElementById('prev-btn').addEventListener('click', previousQuestion);
+        });
+    </script>
+</body>
+</html>
